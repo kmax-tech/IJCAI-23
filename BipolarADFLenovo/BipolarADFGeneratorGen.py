@@ -1,11 +1,13 @@
 import random,string
 import datetime
 from pathlib import Path
+
+#random.seed(2)
 directoryPrefix = "BipolarNodes_"
+## BIPOLAR Version
 
-## BIPOLAR Version for generating bipolar ADF models
-
-# input the length of nodes, max 26 nodes can be used, according to letters of the alphabet
+#script for generating testinstances and measuring the time
+#class takes as input the length of nodes, max 26 nodes can be used, because letters of the alphabet are used
 class BipolarFormula_generator():
     def __init__(self,nbr_nodes):
         self.nbr_nodes = nbr_nodes
@@ -13,9 +15,10 @@ class BipolarFormula_generator():
         self.prob_neg = 0.5
         self.prob_and = 0.5
         # determine number of disjuncts
+        # determine number of conjuncts in each disjunct
         self.nbr_dis_max = nbr_nodes
 
-    # select nodes which shall be used in an acceptance condition
+    # specify which node is occuring
     def acceptance_condition_node_selector(self):
         nodelist = []
         for node in self.nodes:
@@ -28,8 +31,9 @@ class BipolarFormula_generator():
                 nodelist.append(rep)
         return nodelist
 
-    # create the acceptance condition for a single node
+    #create the acceptance condition for a single node
     def acceptance_condition_generator(self):
+        # select nodes which are used
         selected_nodes = self.acceptance_condition_node_selector()
         nbr_conMax = len(selected_nodes)
         node_acceptance_condition = ""
@@ -39,13 +43,14 @@ class BipolarFormula_generator():
                 return "?"
             else: return "!"
 
+        # number of disjuncts
         nbr_disjuncts = random.randint(1,self.nbr_dis_max)
         for x in range(0,nbr_disjuncts):
             nbr_current_conjunct = random.randint(1,nbr_conMax)
             nodes_conjunct = random.sample(selected_nodes,nbr_current_conjunct)
             nodes_conjunct ="(" + ",".join(nodes_conjunct) + ")"
             node_acceptance_condition += nodes_conjunct + ";"
-        return node_acceptance_condition[:-1] # take out the last connective
+        return node_acceptance_condition[:-1] #take out the last connective
 
     def model_creator(self):
         finalnodes_with_acceptancecondition = []
@@ -55,12 +60,11 @@ class BipolarFormula_generator():
         return finalnodes_with_acceptancecondition
 
 
-# create models for an ADF with a specified nbr of nodes;
-# nbr_instances specfies the number of model which shall be created, the models are evenly distributed to the specified number nbr_files
+# create testCases and remove duplicates
 class Create_Instances():
     # input list of filenames, the total nbr of models which shall be generated and the nbr each file should contain
     def __init__(self,nbr_nodes,nbr_instances,nbr_files):
-        # internal dictionary for storing formula
+        # internal variables dictionary for storing formula
         self.nbr_nodes = nbr_nodes
         self.node_names_alphabet = [string.ascii_lowercase[x] for x in range(0,self.nbr_nodes) ]
 
@@ -93,7 +97,7 @@ class Create_Instances():
                 generatedModel = biPolarGen.model_creator()
                 # append new models to the internal storage
                 self.check_instance(generatedModel)
-            # write list to filename
+            #write list to filename
             filename = "BipolarTest_ID_{}_Nodes_{}_ModelNbr_{}_Nbr_{}_Data.txt".format(
                 self.data_id,self.nbr_nodes,self.size_sing_file, nbr + 1)
 
@@ -107,14 +111,14 @@ class Create_Instances():
                 instance_file.write("Model:"+ str(model) + "\n" )
             instance_file.close()
 
-            # reset list of generated instances
+            #reset list of generated instances
             self.generated_list = []
             self.generated_instance_nbr = 0
         print("Double",self.nbr_nodes,self.nbr_of_doubled_instances)
 
-    # check if a created model has been generated before
+
     def check_instance(self, single_model):
-        nbr_of_nodes = len(single_model)
+        nbr_of_nodes = len(single_model)  # first entry of nodes with acceptance condition
         check_list = []  # if an acceptance condition already exists it is notated in the list
 
         for ind,node_nodeAcceptCond in enumerate(single_model): # go through the node encodings
@@ -134,8 +138,6 @@ class Create_Instances():
             # add model to final list
             self.generated_list.append(single_model)
 
-
-# for node size ranging from 1 to 9 create 5 instances, which contain 100 models in total
 def generate_data():
     for x in range(1,10):
         Create_Instances(x,100,5).create_data_files()

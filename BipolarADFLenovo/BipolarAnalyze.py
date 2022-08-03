@@ -1,30 +1,31 @@
 import re
+
 import matplotlib.pyplot as plt, numpy as np
 from pathlib import Path
 
-# load time and get average of results
+# load required files
+#load and get averaged file
 def get_results(nodesize,semantics):
     proxy_expr = r"Eval.*Nodes_"+str(nodesize) + "_"
-    # specify that tri evaluation shall not be loaded
+    # do not load tri evaluation
     class_expr = proxy_expr + r".*Sem_(?!.*tri).*" +  ",".join(semantics)
     class_expr = re.compile(class_expr)
-    # specify that tri evaluation shall be loaded
+    # load tri evaluation
     tri_expr = proxy_expr + r".*Sem_(?=.*tri).*"  +  ",".join(semantics)
     tri_expr = re.compile(tri_expr)
     class_models = retrieveVal(nodesize,class_expr)
     tri_models = retrieveVal(nodesize,tri_expr)
 
     # do division according to the NodeSize
-    #a = np.array(class_models) # debug variable
+    a = np.array(class_models)
     class_models_rd = np.divide(np.array(class_models),10)
     tri_models_rd =np.divide(np.array(tri_models),10)
 
     mclass = np.mean(class_models_rd)
     mtri = np.mean(tri_models_rd)
-    # print information about total number of models found and the average time
-    #print("Info about Nodesize: {} Semantics:{}".format(nodesize,semantics))
-    #print("TwoValued Nbr.Models:{} - AvgTime:{}".format(len(class_models),mclass))
-    #print("TriValued Nbr.Models:{} - AvgTime:{}".format(len(tri_models),mtri))
+    print("Info about Length",nodesize,semantics)
+    print(len(class_models),mclass)
+    print(len(tri_models),mtri)
     return (nodesize,mclass,mtri)
 
 # retrieve time from calculated data, filename is specified by the regex
@@ -45,8 +46,11 @@ def retrieveVal(nodenbr, regexpr):
             calc_results.close()
     return class_time
 
+#get_results(6,["a"])
+# retrieve time from calculated data, filename is specified by the regex
 
 # check length of models for a distinct nodenbr
+
 def modelCounter(nodenbr,regexpr):
     path_for_search = Path.joinpath(Path.cwd(),"BipolarNodes_{}".format(nodenbr))
     models = []
@@ -78,19 +82,14 @@ def countModels(min,max,semantics):
         tri_expr = proxy_expr + r".*Sem_(?=.*tri).*"  +  ",".join(semantics)
         tri_expr = re.compile(tri_expr)
         triRes = modelCounter(nodesize, tri_expr)
+        print("NodeSize: {}".format(nodesize))
+        print(twoRes,triRes)
 
-        print("NodeSize:{} Semantics:{}".format(nodesize,semantics))
-        # print how many models have been found and how many models are unique
-        print("TwoValued NbrModels:{} - NbrUnique:{}".format(twoRes[0],twoRes[1]))
-        print("TriValued NbrModels:{} - NbrUnique:{}".format(triRes[0],triRes[1]))
-
-# check models from node size 1 to 8 for admissible interpreation
 countModels(1,8,["a"])
 
-# create a plot, min and max are specifying the node size range; sem1,sem2 are specify the semantics which shall be plotted;
-# sem1note; sem2note are specifying the description of the used semantics in the legend
+
 def plot_gain(min,max,sem1,sem2,sem1note,sem2note):
-    # collect two and three-valued data for sem1
+    # append the speed factor
     sem1_final = []
     for nbrNodes in range(min,max+1):
         result = get_results(nbrNodes, sem1)
@@ -99,7 +98,7 @@ def plot_gain(min,max,sem1,sem2,sem1note,sem2note):
     class_time_1 = list(map( lambda  x: x[1],sem1_final))
     tri_time_1 = list(map( lambda  x: x[2],sem1_final))
 
-    # collect two and three-valued data for sem2
+    # append the speed factor
     sem2_final = []
     for nbrNodes in range(min, max + 1):
         result = get_results(nbrNodes, sem2)
@@ -134,16 +133,23 @@ def plot_gain(min,max,sem1,sem2,sem1note,sem2note):
     #ax.set_title('Comparison of Admissible and Complete Semantics',fontsize="medium")
     plt.show()
 
+#Tex Style writer, takes items from a list and places them
+def tex_style_writer(args,printflag):
+    dict_style = []
+    for x in range(0,len(args[0])):
+        dict_style.append("${}$ & ${}$ & ${}$ & ${}$ \\ ".format(args[1][x],args[2][x],args[3][x]))
+    if printflag == 1:
+        for line in dict_style:
+            print(dict_style)
+    else: return dict_style
 
-# collect data which is needed in order to create a table, the semantics variable specifies the used semantics
-# the nodenbr in range specifes the range of node sizes included in the table
-# for a specified semantics we collect the avg time of the two-valued completion, the three-valued logic one and calculate the speed factor, indicating how much faster the latter approach is
+#tex_style_writer([range(1,13),np.round(class_time,4),np.round(tri_time,4),speed_factor],1)
+
+#Tex Style writer for multiple interpretations
 def tablecontent_creator():
-    #semantics = [["a"],["c"],["p"]
     semantics = [["a"],["c"]]
-
     # create head
-    table_head = ["Size"]
+    table_head = ["Nodes"]
     for singSem in semantics:
         table_head += ["{}".format(singSem), "tri-{}".format(singSem), "Speed"]
     final_table = [table_head]
@@ -159,14 +165,13 @@ def tablecontent_creator():
     return final_table
 tablecontent_creator()
 
-# tex style writer for data obtained by tablecontent_creator
 def mult_tex_writer(dataTable):
     lendatastream = len(dataTable[0])
     templaterowTemp = r"{}\\"
     dataheadraw = "{}&" * lendatastream
-    dataheadraw = dataheadraw[:-1] # remove ampersand
+    dataheadraw = dataheadraw[:-1]
     datahead = dataheadraw.format(*dataTable[0])
-    print("\\begin{tabular}{" + ("c|" * len(dataTable[0]))[:-1] + "}")
+    print("c|" * len(dataTable[0]))
     print(templaterowTemp.format(datahead))
     for dataRow in dataTable[1:]:
         dataRowRaw = "${}$&" * lendatastream
@@ -175,15 +180,12 @@ def mult_tex_writer(dataTable):
         rounded.append(np.round(dataRow[-1], 2))
         formated = dataRowRaw.format(*rounded)
         print(templaterowTemp.format(formated))
-    print("\\end{tabular}")
 
-# html style writer for data obtained by tablecontent_creator
 def mult_html_writer(dataTable):
     lendatastream = len(dataTable[0])
     templaterowTemp = r"<tr>{}$</tr>"
     dataheadraw = "<th>{}</th>" * lendatastream
     datahead = dataheadraw.format(*dataTable[0])
-    print("<table>")
     print(templaterowTemp.format(datahead))
     for dataRow in dataTable[1:]:
         dataRowRaw = "<td>{}</td>" * lendatastream
@@ -191,10 +193,10 @@ def mult_html_writer(dataTable):
         rounded.append(np.round(dataRow[-1], 2))
         formated = dataRowRaw.format(*rounded)
         print(templaterowTemp.format(formated))
-    print("</table>")
 
-
+#mult_tex_writer(tablecontent_creator())
 #mult_html_writer(tablecontent_creator())
+
 mult_tex_writer(tablecontent_creator())
 plot_gain(1,8,["a"],["c"],"adm","cmp")
 

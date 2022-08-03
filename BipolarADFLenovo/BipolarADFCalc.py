@@ -3,9 +3,6 @@ import timeit
 import ADFfinal as ADF
 from pathlib import Path
 
-# this script measures the calculation time for two-valued completion and three-valued logic, for modifications change the eval data function below
-
-# the timeit template is changed so timeit returns the needed time and the result
 timeit.template = """
 def inner(_it, _timer{init}):
     {setup}
@@ -16,23 +13,24 @@ def inner(_it, _timer{init}):
     return _t1 - _t0, retval
 """
 
-numbertries = 10 # specify how many times the measurement shall be repeated
+numbertries = 10
 directoryPrefix = "BipolarNodes_"
 
-# wrapper to transform the creating and running of the ControlandPrint class into a function without any arguments; needed by timeit
+## BIPOLAR Version
+
 def helperfunc(testinstance,semantics):
     def part():
         x = ADF.ControlAndPrint(testinstance, semantics)
         return x.interevaluator()
     return part
 
-# function calculates an ADF given a model with semantics and measures the time
+#function calculates an ADF given a model with semantics and measures the time
+#we are measuring only processing time
 def testSingleModel(testinstance, semantics):
     helper = helperfunc(testinstance,semantics)
     time_experiment,interpretations = timeit.timeit(helper,number=numbertries)
     return [time_experiment,interpretations]
 
-# load models from the specified textFile and calculate the desired semantics
 def calculateInstances(textFile,desired_semantics):
     CalcInstances= []
     finalModels= []
@@ -58,8 +56,9 @@ def calculateInstances(textFile,desired_semantics):
             file.write(semantic)
     file.close()
 
-# run evaluation for a specified and number of nodes and semantics; if desired three-valued logic is specified in semantics
-# this function search for a BipolarTest data, which has not been calculated before wrt. semantics, if a file is found the calculation is initiated
+#test all Data
+# Calculate all Data
+
 def dataTest(nodenbr,semantics):
     # directory where data is stored is dependent on nodenbr
     path_for_search = Path.joinpath(Path.cwd(),directoryPrefix + str(nodenbr))
@@ -87,7 +86,7 @@ def dataTest(nodenbr,semantics):
             print("Calculate:",filePathName,semantics)
             calculateInstances(filePathName,semantics)
 
-# eval data for semantics specified below, min and max are specifying the node size range
+
 def eval_data(min,max):
     semantics = [["a"],["c"],["p"]]
     for sem in semantics:
@@ -98,7 +97,7 @@ def eval_data(min,max):
             dataTest(x,sem)
 
 eval_data(1,8)
-# run this if you have some time
+print("getting higher")
 #eval_data(9,10)
 
 
