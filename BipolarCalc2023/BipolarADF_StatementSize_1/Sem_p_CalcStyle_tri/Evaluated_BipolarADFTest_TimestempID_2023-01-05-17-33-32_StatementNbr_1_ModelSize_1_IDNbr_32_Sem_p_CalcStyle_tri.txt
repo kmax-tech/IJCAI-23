@@ -1,0 +1,2 @@
+Model:[['a', '!']]
+Semantics:[[7.020399999646543e-05, [[], [{'a': '1.0'}], [{'a': '1.0'}], []]], ['NoSecondRun', 'NoSecondRun', 'NoSecondRun', 'NoSecondRun']]

@@ -1,0 +1,4 @@
+LogReport	Size_13	Sem_p_CalcStyle_tri	Calculation	home/ANON/BipolarCalc2023/BipolarADF_StatementSize_13/Data/BipolarADFTest_TimestempID_2023-01-05-17-33-32_StatementNbr_13_ModelSize_1_IDNbr_4_Data.txt
+LogReport	Size_13	Sem_p_CalcStyle_tri	Calculation	home/ANON/BipolarCalc2023/BipolarADF_StatementSize_13/Data/BipolarADFTest_TimestempID_2023-01-05-17-33-32_StatementNbr_13_ModelSize_1_IDNbr_82_Data.txt
+LogReport	Size_13	Sem_p_CalcStyle_tri	Calculation	home/ANON/BipolarCalc2023/BipolarADF_StatementSize_13/Data/BipolarADFTest_TimestempID_2023-01-05-17-33-32_StatementNbr_13_ModelSize_1_IDNbr_68_Data.txt
+LogReport	Size_13	Sem_p_CalcStyle_tri	Too Many Timeouts Aborting

@@ -1,0 +1,2 @@
+Model:[['a', '?'], ['b', '((#c;#c);#c)'], ['c', '(a;a)']]
+Semantics:[[0.0015245520000917168, [[], [{'a': 'False', 'b': 'True', 'c': 'False'}], [{'a': 'False', 'b': 'True', 'c': 'False'}], []]], ['NoSecondRun', 'NoSecondRun', 'NoSecondRun', 'NoSecondRun']]

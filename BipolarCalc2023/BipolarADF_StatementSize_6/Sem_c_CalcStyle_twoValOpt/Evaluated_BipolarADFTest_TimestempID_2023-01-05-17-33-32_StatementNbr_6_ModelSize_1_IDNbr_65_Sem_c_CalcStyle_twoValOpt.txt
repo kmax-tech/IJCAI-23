@@ -1,0 +1,2 @@
+Model:[['a', '((((#a,#b),#d),#f),c)'], ['b', '(#b,c)'], ['c', '(((((#f,a),e);a);(#b,#f));((((#b,#d),#f),a),e))'], ['d', '(((f;b);d);((b,d),f))'], ['e', '(((f;(a,f));a);(a,f))'], ['f', '((#a,#b),c)']]
+Semantics:[[0.4361409600001025, [[], [{'a': 'False', 'b': 'u', 'c': 'u', 'd': 'True', 'e': 'u', 'f': 'u'}, {'a': 'u', 'b': 'u', 'c': 'u', 'd': 'u', 'e': 'u', 'f': 'u'}], [], []]], ['NoSecondRun', 'NoSecondRun', 'NoSecondRun', 'NoSecondRun']]
